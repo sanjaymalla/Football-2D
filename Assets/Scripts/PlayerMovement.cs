@@ -4,9 +4,11 @@ public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpForce;
+    [SerializeField] private float kickForce;
     private int jumpCount = 0;
 
     Rigidbody2D rb;
+    Rigidbody2D ballRB;
 
 
 
@@ -26,6 +28,10 @@ public class PlayerMovement : MonoBehaviour
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
             jumpCount--;
         }
+        if (Input.GetKeyDown(KeyCode.Space) && ballRB!=null)
+        {
+            Kickball();
+        }
         
     }
 
@@ -34,6 +40,31 @@ public class PlayerMovement : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             jumpCount = 2;
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
+        }
+    }
+
+    private void Kickball()
+    {
+        Vector2 kickDirection = (ballRB.position - (Vector2)transform.position).normalized; // Direction from player to ball
+        ballRB.linearVelocity = Vector2.zero; // Reset velocity for a clean force application
+        ballRB.AddForce(kickDirection * kickForce, ForceMode2D.Impulse);
+    }
+
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Ball"))
+        {
+            ballRB = collision.GetComponent<Rigidbody2D>();
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Ball"))
+        {
+            ballRB = null;
         }
     }
 }

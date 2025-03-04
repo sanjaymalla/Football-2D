@@ -2,32 +2,25 @@ using UnityEngine;
 
 public class Ball : MonoBehaviour
 {
-    [SerializeField] private float bounceForce = 10f;
+    [SerializeField] private float slowDownRate = 0.98f;
+    [SerializeField] private float minSpeed = 0.1f;
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    Rigidbody2D rb;
+
+    private void Start()
     {
-        if (collision.gameObject.CompareTag("Ground"))
+        rb = GetComponent<Rigidbody2D>();
+    }
+
+    private void Update()
+    {
+        if (rb.linearVelocity.magnitude > minSpeed)
         {
-            Rigidbody2D rb = GetComponent<Rigidbody2D>();
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, bounceForce);
-            bounceForce /= 2;
+            rb.linearVelocity *= slowDownRate;
         }
-    }
-
-
-
-
-
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        else
+        {
+            rb.linearVelocity = Vector2.zero;
+        }
     }
 }
